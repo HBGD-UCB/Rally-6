@@ -4,15 +4,27 @@ rm(list=ls())
 library(tidyverse)
 library(metafor)
 
-source("C:/Users/andre/Documents/HBGDki/Scripts/HBGDki_plotting_functions.R")
-source("C:/Users/andre/Documents/HBGDki/Scripts/Meta-analysis functions.R")
+source("~/Rally-6/Scripts/HBGDki_plotting_functions_6A.R")
+source("~/Rally-6/Scripts/Meta-analysis functions_6A.R")
 
 
-setwd("C:/Users/andre/Documents/HBGDki/Results")
-load("descriptive_epi_mean_monthly_cohorts.Rdata")
+setwd("~/Rally-6/Results")
+load("descriptive_epi_mean_monthly_cohorts_6A.Rdata")
 
+#Drop studies that enrol acutely ill children
+
+unique(d$STUDYID)
+d <- d %>% filter(STUDYID!="ki1000301-DIVIDS" & STUDYID!="ki1000304-LBW" & STUDYID!="ki1000306-ZincSGA" & STUDYID!="ki1000304b-ZincInf")
+                     
+            
 
 d<-prep_desc_data(d)
+
+
+#Drop less than 25 in an age category (after it has contributed to the pooled statistic)
+d <- d[d$N > 24, ]
+
+
 
 
 #Set theme and colors
@@ -34,18 +46,18 @@ h <- 7
 
 #Set plot directory
 
-setwd("C:/Users/andre/Documents/HBGDki/Figures/Descriptive Epi/Primary pooled")
+setwd("C:/Users/andre/Documents/Rally-6/Figures/")
 
 #Wasting prevalence
 p1 <- desc_epi_metaplot(d, stat="Prevalence\nof\nwasting",
                      ylabel="Wasting longitudinal prevalence",
-                     title="Wasting longitudinal prevalencee")
+                     title="Wasting longitudinal prevalence")
 ggsave("WastPrev_metaplot.pdf", p1, width = w, height = h, units = "in")
 
 #Severe wasting prevalence
 p2 <- desc_epi_metaplot(d, stat="Prevalence\nof\nsevere\nwasting",
                      ylabel="Severe wasting longitudinal prevalence",
-                     title="Severe wasting longitudinal prevalencee")
+                     title="Severe wasting longitudinal prevalence")
 ggsave("SevWastPrev_metaplot.pdf", p2, width = w, height = h, units = "in")
 
 
@@ -128,7 +140,7 @@ ggsave("WastFalter_unstrat_metaplot.pdf", p8, width = w, height = h, units = "in
 
 
 #Print all descriptive plots together
-pdf("Descriptive_epi_plots.pdf", width=w,height=h, paper="USr")
+pdf("6A_Descriptive_epi_plots.pdf", width=w,height=h, paper="USr")
 p1
 p2
 p3
@@ -138,6 +150,19 @@ p6
 p7
 p8
 dev.off()
+
+
+#Save plots
+save(p1,
+      p2,
+      p3,
+      p4,
+      p5,
+      p6,
+      p7,
+      p8, 
+file="C:/Users/andre/Documents/Rally-6/Results/6A_Descriptive_epi_plots.Rdata")
+
 
 
 #------------------------------------

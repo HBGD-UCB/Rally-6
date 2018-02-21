@@ -1,0 +1,98 @@
+---
+#title: "GHAP Wasting Incidence Report"
+#author: "Andrew Mertens"
+#date: "August 18, 2017"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r cars, echo=FALSE, results='asis'}
+
+  cat("## ", study,"\n")
+  cat("### Wasting descriptive epidemiology\n")
+  cat("Created by: UC Berkeley HBGDki team\n")
+  cat("Updated on: ",as.character(Sys.Date()),"\n")
+
+```
+
+
+
+
+
+__Note:__ These are preliminary results from the 6A Wasting and Stunting in India Rally. They are subject to change as we refine methods, especially as we refine methods for calculating incidence of stunting and recovery from stunting. 
+
+
+
+###Spline curve over child age
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+
+
+WHZ_curve(d)
+
+```
+
+
+
+
+###Spaghetti plot of individual growth trajectories
+Highlighted are a random 5% of trajectories.
+```{r, echo=FALSE}
+spaghetti(d)
+```
+
+
+
+
+###Heatmap of wasting status over child age
+Vertically sorted by minimum WHZ each child experienced. Category 0 is not wasted, category -1 is wasted (WHZ < -2), and category -2 is severly wasted (WHZ < -3). Whitespaces are missing observations
+
+```{r, echo=FALSE}
+
+heatmap(d)
+
+```
+
+
+
+
+###Mean Wasting and wasting recovery incidence and prevalence
+
+```{r, fig2, fig.height = 10, fig.width = 7, echo=FALSE, warning=FALSE, message=FALSE}
+means_plot(tables$means)
+
+```
+
+    
+  
+###Table of wasting prevalence measures
+  
+```{r, echo=FALSE}
+knitr::kable(tables$tab1, digits = 1)
+
+
+```
+
+  
+  
+###Table of wasting incidence measures
+  
+```{r, echo=FALSE}
+knitr::kable(tables$tab2, digits = 1)
+
+```
+
+
+###Table of wasting recovery incidence measures
+
+```{r, echo=FALSE}
+
+knitr::kable(tables$tab3, digits = 1)
+
+```
+
+
+
