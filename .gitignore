@@ -3,4 +3,5 @@
 .RData
 .Rdata
 .Ruserdata
-,rds
+.rds
+.html
