@@ -1,0 +1,147 @@
+---
+title: "Rally 6A Pooled Wasting and Stunting Descriptive Epidemiology"
+author: "Andrew Mertens"
+date: "February 20, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+load("C:/Users/andre/Documents/Rally-6/Results/6A_Descriptive_epi_plots.Rdata")
+load("C:/Users/andre/Documents/Rally-6/Results/6A_Descriptive_epi_plots_stunting.Rdata")
+load("C:/Users/andre/Documents/Rally-6/Results/6A_Descriptive_epi_CI_plots.Rdata")
+
+```
+
+##Overview
+
+In this analysis, we aim to describe the epidemiology of wasting and stunting in India within the Indian cohorts on the Global Health and Analytics (GHAP) platform. We summarize information at the level of individual cohorts from that measured children between birth and age 24 months and __enrol healthy children__. We will present results from studies that enrol ill, small, or prematurely born children in a seperate report. 
+
+We are interested in the following questions:
+
+  *  Does wasting and stunting prevalence and incidence vary by age?
+  *  Among stunted children, when does the onset of stunting occur?
+  *  How often do wasted/stunted children falter into severe wasting/stunting and does the rate vary by age?
+  *  Does the rate of spontaneous recovery from wasting vary by age?
+  *  What is the mean duration of wasting episodes, and does it vary by age?
+
+We present answers to these questions within individal cohorts, and pooled across cohorts using random effects models.
+
+#### Outcomes
+
+  *  Incident wasting/stunting episodes will be defined using 2006 WHO standards as a change in WHZ from above -2 z in the prior measurement to below -2 z in the current measurement. Similarly, we will define severe wasting/stunting episodes using the 2006 WHO standard -3 z cutoff. For stunting, we will assume their is no or limited recovery, and will describe the cumulative incidence of stunting. For wasting, we examine repeated episodes and we will assume a 60 day washout period between episodes of wasting before a new incidence of wasting can occur. Children will only be considered "at risk" for incident wasting episodes, and thus contribute person-time at risk for wasting, if they are not currently wasted and are classified as recovered from any prior wasting episode (beyond the 60 day washout period).
+
+  *  Recovery from wasting will be defined as a WHZ change from below to above -2 z among children who are currently wasted or severely wasted. We will require a child to maintain WHZ above -2 for 2 months to be considered "recovered".   Children will only be considered "at risk" for recovery if they are below -2 WHZ. 
+
+  *  Wasting episode duration will be estimated by counting the days between the onset of wasting and recovery within an individual child.  We will only measure this outcome in studies with at least monthly measurement. With monthly measurement, we have assumed that the episode started or ended at the midpoint between measurements. For example, if a child was not wasted at age 40 days, wasted at age 70 days, and not wasted at age 100 days, the duration of the wasting episode was: (70-40)/2 + (100-70)/2 = 30 days. We will drop censored episodes from calculations of wasting duration to avoid length-biased sampling.
+
+  *  Cumulative incidence (incidence proportion) of wasting and recovery will be defined as the occurrence of any incident event over a defined risk period. For example, we will examine the incidence of any wasting in the first six months of life. We also plan to measure the proportion of children who recover from moderate wasting (WHZ < -2) within 30, 60, and 90 days of onset.
+
+  * Prevalent wasting/stunting will be defined as the proportion of measurements within a specific stratum (e.g., age) below -2 WHZ/HAZ, and analogously below -3 WHZ/HAZ for severe wasting/stunting. 
+
+  * Cumulative incidence of progression to severe wasting or stunting: the proportion of children who falter from moderate wasting/stunting (WHZ/HAZ < -2)  to severe wasting/stunting (WHZ/HAZ <-3) within 30, 60, and 90 days of onset. 
+  
+#### Exposure definitions
+
+  *  Here, we are principally interested in describing patterns in HAZ/WHZ, stunting/wasting prevalence, and stunting/wasting incidence by age and season. We will examine age and season both continuously (in days) and grouped into categories. We plan to group measurements by six-month age bands (0-6m, 6-12m, 12-18m, 18-24m) and by the 12 calendar months to summarize season. 
+
+
+#### Parameters of interest 
+
+  *  Prevalence of wasting and severe wasting
+  *  Cumulative incidence of wasting
+  *  Duration of wasting
+  *  Incidence rate of wasting, severe wasting, wasting recovery, and severe wasting recovery
+  *  Mean percent recovery from wasting within 30, 60 and 90 days of wasting incidence
+  *  Mean percent faltering to severe wasting within 30, 60 and 90 days of wasting incidence
+  *  Cumulative incidence of wasting and severe wasting by month of the year
+
+#### Estimation
+
+  *  Prevalence and cumulative incidence 95% CI calculated with exact binomial test - Pearson and Klopper method
+  *  Incidence rate 95% CI calculated with Poisson exact test.
+  *  All unrealistic measurements of WHZ/HAZ (> 5 or < -5 Z-score) will be dropped. Additionally, any measurement missing child age will be dropped.
+  *  Children are considered at risk of wasting at birth, so children born wasted are considered to have an incident episode of wasting at birth. Children are also assumed to be at risk of wasting at the first measurement in non-birth cohorts and trials, so children wasted at the first measurement in a non-birth cohort are assumed to have incident wasting occurring at the age halfway between birth and the first measurement. 
+
+#### Sensitivity Analyses
+
+  *  Effect of shorter (30 day) and longer (90) day washout period in calculating wasting incidence and wasting recovery incidence.
+  *  Excluding children born or enrolled wasted/stunted as incident wasting/stunting episodes.  The primary analysis includes children in the risk set at their first measurement. In this sensitivity analysis we will exclude children who are wasted at their first measurement (at birth or enrollment). The rationale for this sensitivity analysis is that incident cases at birth in particular imply a different type of intervention (i.e., prenatal) compared with postnatal onset of wasting/stunting.
+
+
+## Plot guide
+
+The following plots visualize pooled and cohort-specific descriptive epidemiology outcomes for wasting and stunting. Each plot displays a different statistic for either stunting or wasting. Each panel represents a different cohort, displaying the estimated statistic and 95% confidence interval over the full two year period of interest as well as the, 0-6 month, 6-12 month,  12-18 month,  and 18-24 month age strata. The blue dots represent the unstratified estimate, and grey dots are age stratified. The top left panel in all plots is are the statistics pooled across all cohorts, with the green dots representing the pooled, unstratified estimates, and the orange dots representing pooled, age-stratified estimates.
+
+#### Prevalence
+
+```{r, echo=F }
+print(p1)
+print(st_p1)
+```
+
+Stunting prevalence increases as the population of children ages, while wasting prevalence does not appear to vary over the first two years of a child's life in India. Stunting is much more prevalent than wasting.
+
+```{r, echo=F }
+print(p2)
+print(st_p2)
+```
+
+Severe wasting prevalence peaks early, in the first 6 months of life, while severe stunting prevalence increases with age. Severe stunting is roughly 4 times more prevalent than severe wasting.
+
+#### Cumulative incidence
+
+```{r, echo=F }
+print(p10)
+print(p9)
+```
+
+While prevalent stunting is three times higher than prevalent wasting, the cumulative incidence of stunting  is only 1.5 times higher than the cumulative incidence of wasting. 40% of children experience any wasting in the first two years of life.
+
+#### Wasting Incidence rate
+
+
+```{r, echo=F }
+print(p3)
+```
+
+```{r, echo=F }
+print(p4)
+```
+
+The rate of wasting and severe wasting incidence peaks in the first 6 months of children's lives.
+
+#### Wasting Duration
+
+```{r, echo=F }
+print(p5)
+```
+
+There doesn't seem to be a consistent pattern in how duration of wasting episodes varies across strata of children's ages. 
+
+#### Recovery: age-stratified
+
+```{r, echo=F }
+print(p6)
+```
+
+Only 15% of children recover within 2 months, but there is a slightly higher proportion of recovery if the wasting occurs in children under 6 months old.  
+
+#### Recovery: 30, 60, 90 day comparison
+
+```{r, echo=F }
+print(p7)
+```
+
+There is no clear time when the majority of wasting recovery occurs.
+
+#### Faltering to severe wasting/stunting
+
+
+```{r, echo=F }
+print(p8)
+```
+
+
+Less than 5% of wasted individuals falter to severe wasting within 90 days.
