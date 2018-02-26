@@ -165,63 +165,93 @@ file="C:/Users/andre/Documents/Rally-6/Results/6A_Descriptive_epi_plots.Rdata")
 
 
 
-#------------------------------------
-# Secondary plots (for presentation)
-#------------------------------------
+#-------------------------------------------
+# Pooled results only for sprint report out
+#-------------------------------------------
 
-# 
-# #get legend
-# df <- d[d$statistic=="Wasting\nincidence\nrate",]
-# df <- df %>% rename(Legend = stratacol)
-# df$Legend <- factor(df$Legend, levels=unique(df$Legend))
-# df$Legend<-recode(df$Legend, 
-# "overall"= "Unstratified",          
-# "pooled"= "Pooled age stratified",    
-#  "pooled_unstrat"= "Pooled unstratified",              
-#  "strata"= "Age stratified"            
-# )
-# col_legend <- c( `Unstratified`="#56B4E9", `Age stratified`="#999999" , `Pooled age stratified`="#f7a809", `Pooled unstratified`="#009E73") #, #f7a809, "#56B4E9",  "#E69F00",)
-# cbPalette <- c( overall="#56B4E9", strata="#999999" , pooled="#f7a809", pooled_unstrat="#009E73") #, #f7a809, "#56B4E9",  "#E69F00",)
-# 
-# ggplot(df, aes(`Child age stratification`)) + 
-#   geom_point(aes(x=strata, y=Mean, fill=Legend, color=Legend), size = 4) +
-#   geom_linerange(aes(x=strata, ymin = Lower.95.CI, ymax = Upper.95.CI, color=Legend), 
-#                  alpha=0.5, size = 3) +
-#   scale_fill_manual(values=col_legend) +
-#   scale_colour_manual(values=col_legend) +
-#   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-#   theme(legend.position="right",
-#         strip.text.x = element_text(size=8),
-#         axis.text.x = element_text(size=8)) +
-#   ylab("Wasting incidence rate per 1000 days")+
-#   ggtitle("Wasting incidence rate")
-# 
-# #Plot single pooled estimate
-# ggplot(d[d$statistic=="Wasting\nincidence\nrate" & d$country_cohort=="Pooled - All",], aes(`Child age stratification`)) + 
-#   geom_point(aes(x=strata, y=Mean, fill=stratacol, color=stratacol), size = 4) +
-#   geom_linerange(aes(x=strata, ymin = Lower.95.CI, ymax = Upper.95.CI, color=stratacol), 
-#                  alpha=0.5, size = 3) +
-#   scale_fill_manual(values=cbPalette) +
-#   scale_colour_manual(values=cbPalette) +
-#   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-#   theme(strip.background = element_blank(),
-#         legend.position="none",
-#         strip.text.x = element_text(size=8),
-#         axis.text.x = element_text(size=8)) +
-#   ylab("Wasting incidence rate per 1000 days")+
-#   ggtitle("Pooled wasting incidence rate")
-# 
-# 
-# 
-# 
-# #Compare wasting/severe wasting IR across regions
-# 
-# df <- d[grep("Pool",d$country_cohort),]
-# df1<-df[df$statistic=="Wasting\nincidence\nrate",]
-# df2<-df[df$statistic=="Severe\nwasting\nincidence\nrate",]
-# 
-# df <- data.frame(df1[,1:3],ratio=df2$Mean/df1$Mean)
-# 
-# ggplot(df, aes(strata)) +
-#   geom_point(aes(x=strata, y=ratio), size = 4) +
-#   facet_wrap(~country_cohort, nrow=2) 
+
+dpooled <- d %>% filter(country_cohort=="Pooled")
+
+head(dpooled)
+
+
+
+
+
+#Order the statistics
+unique(dpooled$statistic)
+
+#Pull out recovery/faltering plots:
+d_rec<-dpooled[grepl("Percent", dpooled$statistic),]
+dpooled<-dpooled[!grepl("Percent", dpooled$statistic),]
+
+dpooled$order<-NA
+dpooled$order[dpooled$statistic=="Prevalence\nof\nwasting"] <-1
+dpooled$order[dpooled$statistic=="Prevalence\nof\nsevere\nwasting"] <-2
+dpooled$order[dpooled$statistic=="Wasting\nincidence\nrate"] <-3
+dpooled$order[dpooled$statistic=="Severe\nwasting\nincidence\nrate"] <-4
+dpooled$order[dpooled$statistic=="Average\nduration\nof\nwasting"] <-5
+dpooled$order[dpooled$statistic=="Wasting\nrecovery\nincidence\nrate"] <-6
+dpooled$order[dpooled$statistic=="Severe\nwasting\nrecovery\nincidence\nrate"] <-7
+dpooled <- dpooled %>% arrange(order)
+dpooled$statistic <- factor(dpooled$statistic, levels=unique(dpooled$statistic))
+
+#Convert prevalences to precent
+dpooled$Mean[dpooled$order<3] <- dpooled$Mean[dpooled$order<3] * 100
+dpooled$Lower.95.CI[dpooled$order<3] <- dpooled$Lower.95.CI[dpooled$order<3] * 100
+dpooled$Upper.95.CI[dpooled$order<3] <- dpooled$Upper.95.CI[dpooled$order<3] * 100
+
+      
+#Drop recovery incidence rates
+dpooled <- dpooled %>% filter(order < 6)
+
+  p <- ggplot(dpooled) +
+              geom_point(aes(x=strata, y=Mean, fill=stratacol, color=stratacol), size = 4) +
+              geom_linerange(aes(x=strata, ymin = Lower.95.CI, ymax = Upper.95.CI, color=stratacol), 
+                 alpha=0.5, size = 3)  + 
+  facet_wrap(~statistic, nrow = 1, scales="free")  + 
+  scale_fill_manual(values=cbPalette) +
+  scale_colour_manual(values=cbPalette) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(strip.background = element_blank(),
+        legend.position="none",
+        strip.text.x = element_text(size=8),
+        axis.text.x = element_text(size=8)) +
+  ylab("")+
+  ggtitle("Pooled, age-stratified descriptive statisics\nof child wasting from birth to 24 months in India") + 
+  xlab("Child age stratification")
+
+  print(p)
+  
+  ggsave("Pooled_wast.pdf", p, width = 7.5, height = 4, units = "in")
+
+  
+  
+  d_rec$Mean <- d_rec$Mean * 100
+  d_rec$Lower.95.CI <- d_rec$Lower.95.CI * 100
+  d_rec$Upper.95.CI <- d_rec$Upper.95.CI * 100
+
+    p_rec <- ggplot(d_rec) +
+              geom_point(aes(x=strata, y=Mean, fill=stratacol, color=stratacol), size = 4) +
+              geom_linerange(aes(x=strata, ymin = Lower.95.CI, ymax = Upper.95.CI, color=stratacol), 
+                 alpha=0.5, size = 3)  + 
+  facet_wrap(~statistic, nrow = 2)  + 
+  scale_fill_manual(values=cbPalette) +
+  scale_colour_manual(values=cbPalette) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(strip.background = element_blank(),
+        legend.position="none",
+        strip.text.x = element_text(size=8),
+        axis.text.x = element_text(size=8)) +
+  ylab("Percent")+
+  ggtitle("Pooled, age-stratified faltering to severe wasting and recovery from wasting\namong moderated wasted children") + 
+  xlab("Child age stratification")
+
+  print(p_rec)
+
+  ggsave("Pooled_wastrec.pdf", p_rec, width = 7.5, height = 7.5, units = "in")
+
+
+
+
+

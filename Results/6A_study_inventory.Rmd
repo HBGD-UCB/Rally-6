@@ -59,7 +59,8 @@ theme_set(theme_bw())
 #-----------------------------------
 # load the monthly summary data
 #-----------------------------------
-load('C:/Users/andre/Documents/HBGDki/Results/Rally 6A/heatmap_df.Rdata')
+
+load('C:/Users/andre/Documents/Rally-6/Results/heatmap_df.Rdata')
 
 #Drop non-India cohorts from multi-site studies:
 df <-df[df$COUNTRY=="INDIA",]
@@ -141,7 +142,8 @@ Drop studies only measuring children older than 2 years
 List descriptions of longitudinal studies with anthropometry data from India:
 
 ```{r, echo=F}
-load('C:/Users/andre/Documents/HBGDki/Results/Rally 6A/metadata6A.Rdata')
+
+load('C:/Users/andre/Documents/Rally-6/Results/metadata6A.Rdata')
 
 #Drop studies without anthro or cross-sectional studies from the metadata
 
@@ -216,50 +218,24 @@ df$sevstunt<-  cut(df$sevstunt,breaks=c(0,5,10,15,20,30,50,100),labels=c("0-5","
 
 # heat map plot scheme
 hm <- ggplot(df,aes(x=agemonth, y=STUDYID)) +
-  # facet over measurement frequency
   geom_tile(colour="white",size=0.25)+
-  #remove extra space
-  #scale_y_discrete(expand=c(0,0))+
-  # scale_x_continuous(expand=c(0,0),
-  #                    breaks=1:7,labels=1:7)+
-  #one unit on x-axis is equal to one unit on y-axis.
-  #equal aspect ratio x and y axis
   coord_equal()+
-  #set base size for all font elements
   theme_bw() +
-  #theme options
   theme(
-    # legend options
     legend.title=element_text(color=textcol,size=8),
-    #reduce/remove legend margin
     legend.margin = margin(grid::unit(0.1,"cm")),
-    #change legend text properties
     legend.text=element_text(colour=textcol,size=7,face="bold"),
-    #change legend key height
     legend.key.height=grid::unit(0.2,"cm"),
-    #set a slim legend
     legend.key.width=grid::unit(1,"cm"),
-    #move legend to the bottom
     legend.position = "bottom",
-    #set x axis text size and colour
     axis.text.x=element_text(size=8,colour=textcol,angle=0,vjust=0.5),
-    #set y axis text colour and adjust vertical justification
     axis.text.y=element_text(size=8,vjust = 0.2,colour=textcol),
-    #change axis ticks thickness
     axis.ticks=element_line(size=0.4),
-    # axis.ticks.x=element_blank(),
-    #change title font, size, colour and justification
     plot.title=element_text(colour=textcol,hjust=0,size=12,face="bold"),
-    #format facet labels
     strip.text.x = element_text(size=10),
     strip.text.y = element_text(angle=270,size=10),
-    #remove plot background
     plot.background=element_blank(),
-    #remove plot border
-    panel.border=element_blank()
-    #remove plot margins
-    # plot.margin=margin(grid::unit(1,"cm"))
-  )
+    panel.border=element_blank())
 
 ```
 
@@ -277,7 +253,10 @@ N_hm <- hm +
    scale_fill_brewer(palette = "Greens",na.value="grey90",
                     guide=guide_legend(title="N obs.",title.vjust = 1,
                                        label.position="bottom",label.hjust=0.5,nrow=1))
- 
+
+w <- 10
+h <- 7
+ggsave("Nheatmap.pdf", N_hm, width = w, height = h, units = "in")
 N_hm
 ```
 
@@ -285,15 +264,44 @@ N_hm
 ### Heatmap of mean WHZ
 
 ```{r, echo=F}
+#Remake heatmap, subset to healthy cohorts and children age 0-24 months
+d <- df %>% mutate(agemonth=as.numeric(as.character(agemonth))) %>%  
+  filter(agemonth < 25) %>% 
+  filter(STUDYID!="DIVIDS" & STUDYID!="LBW" & 
+           STUDYID!="ZincSGA" & STUDYID!="ZincInf")
+
+hm <- ggplot(d,aes(x=agemonth, y=STUDYID)) +
+  geom_tile(colour="white",size=0.25)+
+  coord_equal()+
+  theme_bw() +
+  theme(
+    legend.title=element_text(color=textcol,size=8),
+    legend.margin = margin(grid::unit(0.1,"cm")),
+    legend.text=element_text(colour=textcol,size=7,face="bold"),
+    legend.key.height=grid::unit(0.2,"cm"),
+    legend.key.width=grid::unit(1,"cm"),
+    legend.position = "bottom",
+    axis.text.x=element_text(size=8,colour=textcol,angle=0,vjust=0.5),
+    axis.text.y=element_text(size=8,vjust = 0.2,colour=textcol),
+    axis.ticks=element_line(size=0.4),
+    plot.title=element_text(colour=textcol,hjust=0,size=12,face="bold"),
+    strip.text.x = element_text(size=10),
+    strip.text.y = element_text(angle=270,size=10),
+    plot.background=element_blank(),
+    panel.border=element_blank())
+
 whzhm <- hm +
   aes(fill=meanWHZ) +
-  labs(x="Child age in months",y="",title="Mean WHZ ") +
+  labs(x="Child age in months",y="",title="Mean WHZ from birth to 24 months among enrolled-healthy cohorts") +
   #scale_fill_gradient(low = tableau10[2], high = tableau10[3],na.value="grey90",
    scale_fill_brewer(palette = "Oranges",na.value="grey90", direction=-1,
                     guide=guide_legend(title="WHZ",title.vjust = 1,
                                        label.position="bottom",label.hjust=0.5,nrow=1))
  
 whzhm
+ggsave("WHZheatmap.pdf", whzhm, width = w, height = h, units = "in")
+
+head(d)
 ```
 
 Cells are colored grey is there are less than 10 observations in a cell. Note smaller mean WHZ early in children's lives in some cohorts, and around 1-2 years in others.
@@ -303,13 +311,15 @@ Cells are colored grey is there are less than 10 observations in a cell. Note sm
 ```{r, echo=F}
 hazhm <- hm +
   aes(fill=meanHAZ) +
-  labs(x="Child age in months",y="",title="Mean HAZ ") +
+  labs(x="Child age in months",y="",title="Mean HAZ from birth to 24 months among enrolled-healthy cohorts ") +
   #scale_fill_gradient(low = tableau10[2], high = tableau10[10],na.value="grey90",
   scale_fill_brewer(palette = "Blues",na.value="grey90", direction=-1,
                     guide=guide_legend(title="HAZ",title.vjust = 1,
                                        label.position="bottom",label.hjust=0.5,nrow=1))
  
 hazhm
+ggsave("HAZheatmap.pdf", hazhm, width = w, height = h, units = "in")
+
 ```
 
 Note smaller mean HAZ as the child approaches 2 years in age.
@@ -320,11 +330,13 @@ Note smaller mean HAZ as the child approaches 2 years in age.
 #CATEGORIZE
 wasthm <- hm +
   aes(fill=wast) +
-  labs(x="Child age in months",y="",title="Wasting Prevalence") +
+  labs(x="Child age in months",y="",title="Wasting Prevalence from birth to 24 months among enrolled-healthy cohorts") +
   #scale_fill_gradient(low = tableau10[3], high = tableau10[2],na.value="grey90",
      scale_fill_brewer(palette = "Oranges",na.value="grey90",
                     guide=guide_legend(title="Prevalence",title.vjust = 1,
                                        label.position="bottom",label.hjust=0.5,nrow=1))
+ggsave("Wastheatmap.pdf", wasthm, width = w, height = h, units = "in")
+
 wasthm
 ```
 
@@ -335,12 +347,13 @@ Earlier peak in wasting prevalence
 ```{r, echo=F}
 stunthm <- hm +
   aes(fill=stunt) +
-  labs(x="Child age in months",y="",title="Stunting Prevalence ") +
+  labs(x="Child age in months",y="",title="Stunting Prevalence from birth to 24 months among enrolled-healthy cohorts ") +
   #scale_fill_gradient(low = tableau10[10], high = tableau10[2],na.value="grey90",
   scale_fill_brewer(palette = "Blues",na.value="grey90",
                     guide=guide_legend(title="Prevalence",title.vjust = 1,
                                        label.position="bottom",label.hjust=0.5,nrow=1))
- 
+ ggsave("stuntheatmap.pdf", stunthm, width = w, height = h, units = "in")
+
 stunthm
 ```
 
@@ -352,10 +365,12 @@ Increased faltering to stunting as the child ages.
 #CATEGORIZE
 sevwasthm <- hm +
   aes(fill=sevwast) +
-  labs(x="Child age in months",y="",title="Severe Wasting Prevalence") +
+  labs(x="Child age in months",y="",title="Severe Wasting Prevalence from birth to 24 months among enrolled-healthy cohorts") +
      scale_fill_brewer(palette = "Oranges",na.value="grey90",
                     guide=guide_legend(title="Prevalence",title.vjust = 1,
                                        label.position="bottom",label.hjust=0.5,nrow=1))
+ggsave("sevwastheatmap.pdf", sevwasthm, width = w, height = h, units = "in")
+
 sevwasthm
 ```
 
@@ -364,10 +379,11 @@ sevwasthm
 ```{r, echo=F}
 sevstunthm <- hm +
   aes(fill=sevstunt) +
-  labs(x="Child age in months",y="",title="Severe Stunting Prevalence ") +
+  labs(x="Child age in months",y="",title="Severe Stunting Prevalence from birth to 24 months among enrolled-healthy cohorts ") +
   scale_fill_brewer(palette = "Blues",na.value="grey90",
                     guide=guide_legend(title="Prevalence",title.vjust = 1,
                                        label.position="bottom",label.hjust=0.5,nrow=1))
+ggsave("sevstuntheatmap.pdf", sevstunthm, width = w, height = h, units = "in")
  
 sevstunthm
 ```

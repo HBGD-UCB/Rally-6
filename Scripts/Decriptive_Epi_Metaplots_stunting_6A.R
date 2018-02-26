@@ -12,14 +12,19 @@ setwd("~/Rally-6/Results")
 load("descriptive_epi_mean_monthly_cohorts_stunting_6A.Rdata")
 
 
+#Drop out acutely ill cohorts
+unique(d$STUDYID)
 
+d <- d %>% filter(STUDYID!="ki1000301-DIVIDS" & STUDYID!="ki1000304b-ZincInf" & 
+                  STUDYID!="ki1000306-ZincSGA" & STUDYID!="ki1000304-LBW")
+d <- droplevels(d)
 d<-prep_desc_data(d)
 
 
 #Drop less than 25 in an age category (after it has contributed to the pooled statistic)
 d <- d[d$N > 24, ]
-
-
+#Drop na catergory
+d <- d[!is.na(d$country_cohort),]
 
 
 #Set theme and colors
@@ -43,11 +48,16 @@ h <- 7
 
 setwd("C:/Users/andre/Documents/Rally-6/Figures/")
 
+ # d$Mean <- d$Mean * 100
+ #  d$Lower.95.CI <- d$Lower.95.CI * 100
+ #  d$Upper.95.CI <- d$Upper.95.CI * 100
+
 #Stunting prevalence
 st_p1 <- desc_epi_metaplot(d, stat="Prevalence\nof\nstunting",
                      ylabel="Stunting longitudinal prevalence",
                      title="Stunting longitudinal prevalence")
 #ggsave("StuntPrev_metaplot.pdf", p1, width = w, height = h, units = "in")
+st_p1
 
 #Severe stunting prevalence
 st_p2 <- desc_epi_metaplot(d, stat="Prevalence\nof\nsevere\nstunting",
@@ -157,6 +167,62 @@ save(st_p1,
       st_p7,
       st_p8, 
 file="C:/Users/andre/Documents/Rally-6/Results/6A_Descriptive_epi_plots_stunting.Rdata")
+
+
+
+
+
+
+
+
+
+
+
+
+#-------------------------------------------
+# Pooled results only for sprint report out
+#-------------------------------------------
+
+dpooled <- d %>% filter(country_cohort=="Pooled")
+
+head(dpooled)
+
+
+#Order the statistics
+unique(dpooled$statistic)
+
+#Pull out recovery/faltering plots:
+dpooled<-dpooled[grepl("Prev", dpooled$statistic),]
+
+dpooled$statistic <- relevel(dpooled$statistic, ref="Prevalence\nof\nstunting")
+  
+  dpooled$Mean <- dpooled$Mean * 100
+  dpooled$Lower.95.CI <- dpooled$Lower.95.CI * 100
+  dpooled$Upper.95.CI <- dpooled$Upper.95.CI * 100
+  p <- ggplot(dpooled) +
+              geom_point(aes(x=strata, y=Mean, fill=stratacol, color=stratacol), size = 4) +
+              geom_linerange(aes(x=strata, ymin = Lower.95.CI, ymax = Upper.95.CI, color=stratacol), 
+                 alpha=0.5, size = 3)  + 
+  facet_wrap(~statistic, nrow = 1)  + 
+  scale_fill_manual(values=cbPalette) +
+  scale_colour_manual(values=cbPalette) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(strip.background = element_blank(),
+        legend.position="none",
+        strip.text.x = element_text(size=8),
+        axis.text.x = element_text(size=8)) +
+  ylab("Prevalence")+
+  ggtitle("Pooled, age-stratified prevalence\nof child stunting from birth to 24 months in Indian cohorts") + 
+  xlab("Child age stratification")
+
+  print(p)
+  
+  ggsave("Pooled_stunt_prev.pdf", p, width = 7.5, height = 5, units = "in")
+
+  
+  
+
+
 
 
 

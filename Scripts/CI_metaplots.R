@@ -1,6 +1,9 @@
 
 
 rm(list=ls())
+library(tidyverse)
+library(epitools)
+library(binom)
 
 source("C:/Users/andre/Documents/Rally-6/Scripts/HBGDki_plotting_functions_6A.R")
 source("C:/Users/andre/Documents/Rally-6/Scripts/Meta-analysis functions_6A.R")
@@ -139,4 +142,33 @@ ggsave("WastCI_metaplot.pdf", p10, width = w, height = h, units = "in")
 
 
 save(p9, p10, file="C:/Users/andre/Documents/Rally-6/Results/6A_Descriptive_epi_CI_plots.Rdata")
+
+
+
+#Combined, pooled
+df <- rbind(
+  data.frame(d, Y="Stunting"),
+  data.frame(dwast, Y="Wasting")
+)
+
+
+
+p11 <- ggplot(df[df$country_cohort=="Pooled",]) +
+              geom_point(aes(x=strata, y=Mean, fill=stratacol, color=stratacol), size = 4) +
+              geom_linerange(aes(x=strata, ymin = Lower.95.CI, ymax = Upper.95.CI, color=stratacol), 
+                 alpha=0.5, size = 3) + 
+  scale_fill_manual(values=cbPalette) +
+  scale_colour_manual(values=cbPalette) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(strip.background = element_blank(),
+        legend.position="none",
+        strip.text.x = element_text(size=8),
+        axis.text.x = element_text(size=8)) +
+    facet_wrap(~Y) +
+  ylab("Cumulative Incidence") +
+  ggtitle("Cumulative Incidence\nof Wasting and Stunting") + 
+  xlab("Child age stratification")
+p11
+
+ggsave("Wast+Stunt_CI_metaplot.pdf", p11, width = 7.5, height = 5, units = "in")
 
