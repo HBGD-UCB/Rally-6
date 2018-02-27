@@ -22,7 +22,7 @@ library(rmarkdown)
 library(ggplot2)
 
 setwd("U:/R scripts/")
-source("Markdown_plot_functions.R")
+source("4b_RiskFactor_functions.R")
 
 setwd("U:/data/WastIncDatasets")
 
