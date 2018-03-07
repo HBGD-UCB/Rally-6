@@ -11,17 +11,13 @@ dataFolder <- Folder('figures', parent=project)
 dataFolder <- synStore(dataFolder)
 
 
-#Set plot width and height
-w <- 5
-h <- 3.5
-
 
 synapse_save <- function(file, folder=dataFolder, path="C:/Users/andre/Documents/HBGDki/Rally-6/Figures/"){
   filepath <- paste0(path,file)
   file <- File(path=filepath, parent=folder)
   file <- synStore(file)
 }
-StuntCI_metaplot
+
 
 
 synapse_save("StuntCI_metaplot.png")
@@ -47,4 +43,16 @@ synapse_save("StuntRec60_metaplot.png")
 synapse_save("StuntRec_unstrat_metaplot.png")
 synapse_save("StuntFalter_unstrat_metaplot.png")
 synapse_save("Pooled_stunt_prev.png")
+
+
+
+synapse_save("Nheatmap.png")
+synapse_save("whzheatmap.png")
+synapse_save("hazheatmap.png")
+synapse_save("wastheatmap.png")
+synapse_save("stuntheatmap.png")
+synapse_save("sevwastheatmap.png")
+synapse_save("sevstuntheatmap.png")
+
+
 

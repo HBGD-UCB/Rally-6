@@ -217,13 +217,39 @@ stunthm <- hm +
 stunthm
 
 
-#Creat 4 panel figure with Multiplot
+sevwasthm <- hm +
+  aes(fill=sevwast) +
+  labs(x="Child age in months",y="",title="Severe Wasting Prevalence") +
+  scale_fill_gradient(low = tableau10[3], high = tableau10[2],na.value="grey90",
+                    guide=guide_legend(title="Prevalence",title.vjust = 1,
+                                       label.position="bottom",label.hjust=0.5,nrow=1))
+ 
+sevwasthm
+
+
+sevstunthm <- hm +
+  aes(fill=sevstunt) +
+  labs(x="Child age in months",y="",title="Severe Stunting Prevalence ") +
+  scale_fill_gradient(low = tableau10[10], high = tableau10[2],na.value="grey90",
+                    guide=guide_legend(title="Prevalence",title.vjust = 1,
+                                       label.position="bottom",label.hjust=0.5,nrow=1))
+ 
+sevstunthm
 
 
 
+#Set plot width and height
+w <- 10
+h <- 7
 
-
-
+setwd("C:/Users/andre/Documents/HBGDki//Rally-6/Figures")
+ggsave("Nheatmap.png", N_hm, width = w, height = h, units = "in")
+ggsave("whzheatmap.png", whzhm, width = w, height = h, units = "in")
+ggsave("hazheatmap.png", hazhm, width = w, height = h, units = "in")
+ggsave("wastheatmap.png", wasthm, width = w, height = h, units = "in")
+ggsave("stuntheatmap.png", stunthm, width = w, height = h, units = "in")
+ggsave("sevwastheatmap.png", sevwasthm, width = w, height = h, units = "in")
+ggsave("sevstuntheatmap.png", sevstunthm, width = w, height = h, units = "in")
 
 
 
