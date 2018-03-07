@@ -5,10 +5,10 @@ library(tidyverse)
 library(epitools)
 library(binom)
 
-source("C:/Users/andre/Documents/Rally-6/Scripts/HBGDki_plotting_functions_6A.R")
-source("C:/Users/andre/Documents/Rally-6/Scripts/Meta-analysis functions_6A.R")
+source("C:/Users/andre/Documents/HBGDki/Rally-6/Scripts/HBGDki_plotting_functions_6A.R")
+source("C:/Users/andre/Documents/HBGDki/Rally-6/Scripts/Meta-analysis functions_6A.R")
 
-load("C:/Users/andre/Documents/Rally-6/Results/CI_df_6A.Rdata")
+load("C:/Users/andre/Documents/HBGDki/Rally-6/Results/CI_df_6A.Rdata")
 
 #Drop studies that enrol acutely ill children
 unique(Ndf$STUDYID)
@@ -119,7 +119,7 @@ h <- 7
 
 #Set plot directory
 
-setwd("C:/Users/andre/Documents/Rally-6/Figures/")
+setwd("C:/Users/andre/Documents/HBGDki/Rally-6/Figures/")
 
 #Stunting CI
 p9 <- desc_epi_metaplot(d, stat="revalence",
@@ -127,7 +127,7 @@ p9 <- desc_epi_metaplot(d, stat="revalence",
                      title="Cumulative Incidence\nof Stunting")
 
 p9
-ggsave("StuntCI_metaplot.pdf", p9, width = w, height = h, units = "in")
+ggsave("StuntCI_metaplot.png", p9, width = w, height = h, units = "in")
 
     
 
@@ -138,10 +138,9 @@ p10 <- desc_epi_metaplot(dwast, stat="revalence",
                      title="Cumulative Incidence\nof Wasting")
  
 p10
-ggsave("WastCI_metaplot.pdf", p10, width = w, height = h, units = "in")
+ggsave("WastCI_metaplot.png", p10, width = w, height = h, units = "in")
 
 
-save(p9, p10, file="C:/Users/andre/Documents/Rally-6/Results/6A_Descriptive_epi_CI_plots.Rdata")
 
 
 
@@ -170,5 +169,9 @@ p11 <- ggplot(df[df$country_cohort=="Pooled",]) +
   xlab("Child age stratification")
 p11
 
-ggsave("Wast+Stunt_CI_metaplot.pdf", p11, width = 7.5, height = 5, units = "in")
+ggsave("Wast+Stunt_CI_metaplot.png", p11, width = 7.5, height = 5, units = "in")
+
+
+
+save(p9, p10, p11, file="C:/Users/andre/Documents/HBGDki/Rally-6/Results/6A_Descriptive_epi_CI_plots.Rdata")
 

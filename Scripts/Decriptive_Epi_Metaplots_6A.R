@@ -4,11 +4,11 @@ rm(list=ls())
 library(tidyverse)
 library(metafor)
 
-source("~/Rally-6/Scripts/HBGDki_plotting_functions_6A.R")
-source("~/Rally-6/Scripts/Meta-analysis functions_6A.R")
+source("C:/Users/andre/Documents/HBGDki//Rally-6/Scripts/HBGDki_plotting_functions_6A.R")
+source("C:/Users/andre/Documents/HBGDki//Rally-6/Scripts/Meta-analysis functions_6A.R")
 
 
-setwd("~/Rally-6/Results")
+setwd("C:/Users/andre/Documents/HBGDki//Rally-6/Results")
 load("descriptive_epi_mean_monthly_cohorts_6A.Rdata")
 
 #Drop studies that enrol acutely ill children
@@ -46,39 +46,39 @@ h <- 7
 
 #Set plot directory
 
-setwd("C:/Users/andre/Documents/Rally-6/Figures/")
+setwd("C:/Users/andre/Documents/HBGDki/Rally-6/Figures/")
 
 #Wasting prevalence
 p1 <- desc_epi_metaplot(d, stat="Prevalence\nof\nwasting",
                      ylabel="Wasting longitudinal prevalence",
                      title="Wasting longitudinal prevalence")
-ggsave("WastPrev_metaplot.pdf", p1, width = w, height = h, units = "in")
+ggsave("WastPrev_metaplot.png", p1, width = w, height = h, units = "in")
 
 #Severe wasting prevalence
 p2 <- desc_epi_metaplot(d, stat="Prevalence\nof\nsevere\nwasting",
                      ylabel="Severe wasting longitudinal prevalence",
                      title="Severe wasting longitudinal prevalence")
-ggsave("SevWastPrev_metaplot.pdf", p2, width = w, height = h, units = "in")
+ggsave("SevWastPrev_metaplot.png", p2, width = w, height = h, units = "in")
 
 
 #Wasting IR
 p3 <- desc_epi_metaplot(d, stat="Wasting\nincidence\nrate",
                      ylabel="Wasting incidence rate per 1000 days",
                      title="Wasting incidence rate")
-ggsave("WastInc_metaplot.pdf", p3, width = w, height = h, units = "in")
+ggsave("WastInc_metaplot.png", p3, width = w, height = h, units = "in")
 
 #Sev wasting IR
 
 p4 <- desc_epi_metaplot(d, stat="Severe\nwasting\nrecovery\nincidence\nrate",
                      ylabel="Severe wasting incidence rate per 1000 days",
                      title="Severe wasting incidence rate")
-ggsave("SevWastInc_metaplot.pdf", p4, width = w, height = h, units = "in")
+ggsave("SevWastInc_metaplot.png", p4, width = w, height = h, units = "in")
 
 #Duration
 p5<- desc_epi_metaplot(d, stat="Average\nduration\nof\nwasting",
                      ylabel="Duration of wasting (days)",
                      title="Average duration of wasting")
-ggsave("Durationc_metaplot.pdf", p5, width = w, height = h, units = "in")
+ggsave("Durationc_metaplot.png", p5, width = w, height = h, units = "in")
 
 
 
@@ -86,7 +86,7 @@ ggsave("Durationc_metaplot.pdf", p5, width = w, height = h, units = "in")
 p6 <- desc_epi_metaplot(d, stat="Percent\nwasting\nrecovered\nin 60 days",
                      ylabel="Percent wasting recovered in 60 days",
                      title="Percent wasting recovered in 60 days")
-ggsave("WastRec60_metaplot.pdf", p6, width = w, height = h, units = "in")
+ggsave("WastRec60_metaplot.png", p6, width = w, height = h, units = "in")
 
 
 #Unstratified comparison of 30,60,90 day recovery
@@ -107,7 +107,7 @@ p7 <- desc_epi_metaplot(d_unstrat, stat=NULL,
                      ylabel="Percent wasting recovered",
                      title="Percent wasting recovered within 30, 60, and 90 days",
                      xlabel="Recovery time")
-ggsave("WastRec_unstrat_metaplot.pdf", p7, width = w, height = h, units = "in")
+ggsave("WastRec_unstrat_metaplot.png", p7, width = w, height = h, units = "in")
 
 
 
@@ -134,7 +134,7 @@ p8 <- desc_epi_metaplot(d_unstrat, stat=NULL,
                      ylabel="Percent wasting faltered to severe wasting",
                      title="Percent wasting faltered to severe wasting within 30, 60, and 90 days",
                      xlabel="Faltering time")
-ggsave("WastFalter_unstrat_metaplot.pdf", p8, width = w, height = h, units = "in")
+ggsave("WastFalter_unstrat_metaplot.png", p8, width = w, height = h, units = "in")
 
 
 
@@ -161,7 +161,7 @@ save(p1,
       p6,
       p7,
       p8, 
-file="C:/Users/andre/Documents/Rally-6/Results/6A_Descriptive_epi_plots.Rdata")
+file="C:/Users/andre/Documents/HBGDki/Rally-6/Results/6A_Descriptive_epi_plots.Rdata")
 
 
 
@@ -205,7 +205,7 @@ dpooled$Upper.95.CI[dpooled$order<3] <- dpooled$Upper.95.CI[dpooled$order<3] * 1
 #Drop recovery incidence rates
 dpooled <- dpooled %>% filter(order < 6)
 
-  p <- ggplot(dpooled) +
+  p_pooled <- ggplot(dpooled) +
               geom_point(aes(x=strata, y=Mean, fill=stratacol, color=stratacol), size = 4) +
               geom_linerange(aes(x=strata, ymin = Lower.95.CI, ymax = Upper.95.CI, color=stratacol), 
                  alpha=0.5, size = 3)  + 
@@ -221,9 +221,9 @@ dpooled <- dpooled %>% filter(order < 6)
   ggtitle("Pooled, age-stratified descriptive statisics\nof child wasting from birth to 24 months in India") + 
   xlab("Child age stratification")
 
-  print(p)
+  print(p_pooled)
   
-  ggsave("Pooled_wast.pdf", p, width = 7.5, height = 4, units = "in")
+  ggsave("Pooled_wast.png", p, width = 7.5, height = 4, units = "in")
 
   
   
@@ -249,9 +249,22 @@ dpooled <- dpooled %>% filter(order < 6)
 
   print(p_rec)
 
-  ggsave("Pooled_wastrec.pdf", p_rec, width = 7.5, height = 7.5, units = "in")
+  ggsave("Pooled_wastrec.png", p_rec, width = 7.5, height = 7.5, units = "in")
 
 
+
+#Save plots
+save(p1,
+      p2,
+      p3,
+      p4,
+      p5,
+      p6,
+      p7,
+      p8,
+      p_pooled,
+      p_rec,
+file="C:/Users/andre/Documents/HBGDki/Rally-6/Results/6A_Descriptive_epi_plots.Rdata")
 
 
 

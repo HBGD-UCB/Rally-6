@@ -4,11 +4,11 @@ rm(list=ls())
 library(tidyverse)
 library(metafor)
 
-source("~/Rally-6/Scripts/HBGDki_plotting_functions_6A.R")
-source("~/Rally-6/Scripts/Meta-analysis functions_6A.R")
+source("C:/Users/andre/Documents/HBGDki//Rally-6/Scripts/HBGDki_plotting_functions_6A.R")
+source("C:/Users/andre/Documents/HBGDki//Rally-6/Scripts/Meta-analysis functions_6A.R")
 
 
-setwd("~/Rally-6/Results")
+setwd("C:/Users/andre/Documents/HBGDki//Rally-6/Results")
 load("descriptive_epi_mean_monthly_cohorts_stunting_6A.Rdata")
 
 
@@ -46,7 +46,7 @@ h <- 7
 
 #Set plot directory
 
-setwd("C:/Users/andre/Documents/Rally-6/Figures/")
+setwd("C:/Users/andre/Documents/HBGDki/Rally-6/Figures/")
 
  # d$Mean <- d$Mean * 100
  #  d$Lower.95.CI <- d$Lower.95.CI * 100
@@ -56,34 +56,34 @@ setwd("C:/Users/andre/Documents/Rally-6/Figures/")
 st_p1 <- desc_epi_metaplot(d, stat="Prevalence\nof\nstunting",
                      ylabel="Stunting longitudinal prevalence",
                      title="Stunting longitudinal prevalence")
-#ggsave("StuntPrev_metaplot.pdf", p1, width = w, height = h, units = "in")
+ggsave("StuntPrev_metaplot.png", st_p1, width = w, height = h, units = "in")
 st_p1
 
 #Severe stunting prevalence
 st_p2 <- desc_epi_metaplot(d, stat="Prevalence\nof\nsevere\nstunting",
                      ylabel="Severe stunting longitudinal prevalence",
                      title="Severe stunting longitudinal prevalence")
-#ggsave("SevStuntPrev_metaplot.pdf", p2, width = w, height = h, units = "in")
+ggsave("SevStuntPrev_metaplot.png", st_p2, width = w, height = h, units = "in")
 
 
 #Stunting IR
 st_p3 <- desc_epi_metaplot(d, stat="Stunting\nincidence\nrate",
                      ylabel="Stunting incidence rate per 1000 days",
                      title="Stunting incidence rate")
-#ggsave("StuntInc_metaplot.pdf", p3, width = w, height = h, units = "in")
+ggsave("StuntInc_metaplot.png", st_p3, width = w, height = h, units = "in")
 
 #Sev stunting IR
 
 st_p4 <- desc_epi_metaplot(d, stat="Severe\nstunting\nrecovery\nincidence\nrate",
                      ylabel="Severe stunting incidence rate per 1000 days",
                      title="Severe stunting incidence rate")
-#ggsave("SevStuntInc_metaplot.pdf", p4, width = w, height = h, units = "in")
+ggsave("SevStuntInc_metaplot.png", st_p4, width = w, height = h, units = "in")
 
 #Duration
 st_p5<- desc_epi_metaplot(d, stat="Average\nduration\nof\nstunting",
                      ylabel="Duration of stunting (days)",
                      title="Average duration of stunting")
-#ggsave("Durationc_metaplot.pdf", p5, width = w, height = h, units = "in")
+ggsave("Durationc_metaplot.png", st_p5, width = w, height = h, units = "in")
 
 
 
@@ -91,7 +91,7 @@ st_p5<- desc_epi_metaplot(d, stat="Average\nduration\nof\nstunting",
 st_p6 <- desc_epi_metaplot(d, stat="Percent\nstunting\nrecovered\nin 60 days",
                      ylabel="Percent stunting recovered in 60 days",
                      title="Percent stunting recovered in 60 days")
-#ggsave("StuntRec60_metaplot.pdf", p6, width = w, height = h, units = "in")
+ggsave("StuntRec60_metaplot.png", st_p6, width = w, height = h, units = "in")
 
 
 #Unstratified comparison of 30,60,90 day recovery
@@ -112,7 +112,7 @@ st_p7 <- desc_epi_metaplot(d_unstrat, stat=NULL,
                      ylabel="Percent stunting recovered",
                      title="Percent stunting recovered within 30, 60, and 90 days",
                      xlabel="Recovery time")
-#ggsave("StuntRec_unstrat_metaplot.pdf", p7, width = w, height = h, units = "in")
+ggsave("StuntRec_unstrat_metaplot.png", st_p7, width = w, height = h, units = "in")
 
 
 
@@ -139,13 +139,13 @@ st_p8 <- desc_epi_metaplot(d_unstrat, stat=NULL,
                      ylabel="Percent stunting faltered to severe stunting",
                      title="Percent stunting faltered to severe stunting within 30, 60, and 90 days",
                      xlabel="Faltering time")
-#ggsave("StuntFalter_unstrat_metaplot.pdf", p8, width = w, height = h, units = "in")
+ggsave("StuntFalter_unstrat_metaplot.png", st_p8, width = w, height = h, units = "in")
 
 
 
 
 #Print all descriptive plots together
-pdf("6A_Descriptive_epi_plots_stunting.pdf", width=w,height=h, paper="USr")
+pdf("6A_Descriptive_epi_plots_stunting.png", width=w,height=h, paper="USr")
 st_p1
 st_p2
 st_p3
@@ -199,7 +199,7 @@ dpooled$statistic <- relevel(dpooled$statistic, ref="Prevalence\nof\nstunting")
   dpooled$Mean <- dpooled$Mean * 100
   dpooled$Lower.95.CI <- dpooled$Lower.95.CI * 100
   dpooled$Upper.95.CI <- dpooled$Upper.95.CI * 100
-  p <- ggplot(dpooled) +
+  st_pooled <- ggplot(dpooled) +
               geom_point(aes(x=strata, y=Mean, fill=stratacol, color=stratacol), size = 4) +
               geom_linerange(aes(x=strata, ymin = Lower.95.CI, ymax = Upper.95.CI, color=stratacol), 
                  alpha=0.5, size = 3)  + 
@@ -215,12 +215,25 @@ dpooled$statistic <- relevel(dpooled$statistic, ref="Prevalence\nof\nstunting")
   ggtitle("Pooled, age-stratified prevalence\nof child stunting from birth to 24 months in Indian cohorts") + 
   xlab("Child age stratification")
 
-  print(p)
-  
-  ggsave("Pooled_stunt_prev.pdf", p, width = 7.5, height = 5, units = "in")
+
+  ggsave("Pooled_stunt_prev.png", st_pooled, width = 7.5, height = 5, units = "in")
 
   
   
+  
+  #Save plots
+save(st_p1,
+      st_p2,
+      st_p3,
+      st_p4,
+      st_p5,
+      st_p6,
+      st_p7,
+      st_p8, 
+     st_pooled,
+file="C:/Users/andre/Documents/HBGDki/Rally-6/Results/6A_Descriptive_epi_plots_stunting.Rdata")
+
+
 
 
 
