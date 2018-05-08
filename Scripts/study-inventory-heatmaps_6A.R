@@ -56,8 +56,8 @@ theme_set(theme_bw())
 #-----------------------------------
 # load the monthly summary data
 #-----------------------------------
-load('C:/Users/andre/Documents/HBGDki/Results/Rally 6A/heatmap_df.Rdata')
-load('C:/Users/andre/Documents/HBGDki/Results/Rally 6A/metadata6A.Rdata')
+load('C:/Users/andre/Documents/HBGDki/Rally-6/Results/heatmap_df.Rdata')
+load('C:/Users/andre/Documents/HBGDki/Rally-6/Results/metadata6A.Rdata')
 
 #Drop studies without anthro or cross-sectional studies from the metadata
 meta$study_id[!is.na(meta$notes)]

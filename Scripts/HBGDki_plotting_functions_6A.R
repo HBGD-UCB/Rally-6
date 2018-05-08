@@ -260,7 +260,8 @@ desc_epi_metaplot <- function(d,
                               stat="Wasting\nincidence\nrate",
                               ylabel="Wasting incidence rate per 1000 days",
                               title="Wasting incidence rate",
-                              xlabel="Child age stratification"){
+                              xlabel="Child age stratification",
+                              ylimit=NULL){
 if(!is.null(stat)){
   p <- ggplot(d[d$statistic==stat,]) +
               geom_point(aes(x=strata, y=Mean, fill=stratacol, color=stratacol), size = 4) +
@@ -285,6 +286,10 @@ p <- p +
   ylab(ylabel)+
   ggtitle(title) + 
   xlab(xlabel)
+
+if(!is.null(ylimit)){
+  p <- p + ylim(ylimit)
+}
 
  return(p)
 }

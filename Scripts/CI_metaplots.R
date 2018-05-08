@@ -124,8 +124,8 @@ setwd("C:/Users/andre/Documents/HBGDki/Rally-6/Figures/")
 #Stunting CI
 p9 <- desc_epi_metaplot(d, stat="revalence",
                      ylabel="Cumulative Incidence of Stunting",
-                     title="Cumulative Incidence\nof Stunting")
-
+                     title="Cumulative Incidence\nof Stunting",
+                     ylimit=c(0,100))
 p9
 ggsave("StuntCI_metaplot.png", p9, width = w, height = h, units = "in")
 
@@ -135,7 +135,8 @@ ggsave("StuntCI_metaplot.png", p9, width = w, height = h, units = "in")
 #Wasting CI
 p10 <- desc_epi_metaplot(dwast, stat="revalence",
                      ylabel="Cumulative Incidence of Wasting",
-                     title="Cumulative Incidence\nof Wasting")
+                     title="Cumulative Incidence\nof Wasting",
+                     ylimit=c(0,100))
  
 p10
 ggsave("WastCI_metaplot.png", p10, width = w, height = h, units = "in")
@@ -166,7 +167,7 @@ p11 <- ggplot(df[df$country_cohort=="Pooled",]) +
     facet_wrap(~Y) +
   ylab("Cumulative Incidence") +
   ggtitle("Cumulative Incidence\nof Wasting and Stunting") + 
-  xlab("Child age stratification")
+  xlab("Child age stratification") + coord_cartesian(ylim=c(0,100))
 p11
 
 ggsave("Wast+Stunt_CI_metaplot.png", p11, width = 7.5, height = 5, units = "in")
