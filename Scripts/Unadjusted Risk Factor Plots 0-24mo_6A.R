@@ -21,14 +21,22 @@ cbPalette <- c( "#56B4E9" , rep("#999999",40))
 
 #hbgdki pallet
 tableau10 <- c("#1F77B4","#FF7F0E","#2CA02C","#D62728",
+  "#9467BD","#8C564B","#E377C2","#7F7F7F","#BCBD22","#17BECF","#1F77B4","#FF7F0E","#2CA02C","#D62728",
   "#9467BD","#8C564B","#E377C2","#7F7F7F","#BCBD22","#17BECF")
 
 
 #Load data
-load("C:/Users/andre/Documents/HBGDki/Results/Risk_Factor_Results_wastinc0-24_noBirthInc.Rdata") %>% filter(COUNTRY=="INDIA")
-noBW<-wastinc_024_unadj
-load("C:/Users/andre/Documents/HBGDki/Results/Risk_Factor_Results_wastinc0-24.Rdata") %>% filter(COUNTRY=="INDIA")
+load("C:/Users/andre/Documents/HBGDki/Results/Risk_Factor_Results_wastinc0-24_noBirthInc.Rdata") 
+noBW<-list()
 
+for(i in 1:length(wastinc_024_unadj)){
+  noBW[[i]]<-wastinc_024_unadj[[i]] %>% filter(COUNTRY=="INDIA")
+    names(noBW)[i] <- names(wastinc_024_unadj)[i]
+}
+load("C:/Users/andre/Documents/HBGDki/Results/Risk_Factor_Results_wastinc0-24.Rdata")
+for(i in 1:length(wastinc_024_unadj)){
+  wastinc_024_unadj[[i]]<-wastinc_024_unadj[[i]] %>% filter(COUNTRY=="INDIA")
+}
 #Merge in the no-birth incidence risk factors
 names(noBW)
 wastinc_024_unadj$birthorder <- noBW$birthorder
@@ -63,7 +71,9 @@ for(i in 1:length(wastinc_024_unadj)){
     STUDYID != "ki1000304-ZnMort" )
 }
 
-
+#Drop variables that don't make sense to pool
+wastinc_024_unadj$month <- NULL
+wastinc_024_unadj$birthmonth <- NULL
 
 
 
@@ -220,7 +230,8 @@ return(RRplot)
 
 REpooled_wastinc024_unadj <- NULL
 
-setwd("C:/Users/andre/Documents/HBGDki/Figures/6A")
+
+setwd("C:/Users/andre/Documents/HBGDki/Rally-6/Figures")
 
 pdf("Unadjusted Risk Factor Plots Wasting CI 0-24 6A.pdf", height=10, width=8)
 
@@ -229,20 +240,24 @@ for(i in 1:length(wastinc_024_unadj)){
      sum(is.na(wastinc_024_unadj[[i]]$RR),na.rm=T) != nrow(wastinc_024_unadj[[i]])
     ){
     
-    if(length(unique(wastinc_024_unadj[[i]]$meanLevel))>13){
+    if(length(unique(wastinc_024_unadj[[i]]$meanLevel))>5){
     plotlevels <- c("Q3", "Q1", "Q2", "Q4")  
     wastinc_024_unadj[[i]]$meanLevel <- wastinc_024_unadj[[i]]$level <- rep(plotlevels, nrow(wastinc_024_unadj[[i]])/4)
     wastinc_024_unadj[[i]]$level.order <- rep(c(3,1,2,4), nrow(wastinc_024_unadj[[i]])/4)
     }else{
-    plotlevels <- unique(wastinc_024_unadj[[i]]$meanLevel)  
+    plotlevels <- unique(wastinc_024_unadj[[i]]$meanLevel[!is.na(wastinc_024_unadj[[i]]$meanLevel)])  
     }
                  
   Anywast <- cleandf(wastinc_024_unadj[[i]], RF_levels=plotlevels)   #c("<=2700","2700-3000","3000-3400",">3400"))
+  Anywast <- Anywast[!is.na(Anywast$level),]
+  Anywast<-droplevels(Anywast)
+  wastinc_024_unadj[[i]]<-droplevels(wastinc_024_unadj[[i]])
+
   Anywast_plot <-RRplot_fun(Anywast, 
-                               reflevel=wastinc_024_unadj[[i]]$level[1], 
+                               reflevel=as.character(wastinc_024_unadj[[i]]$level[1]), 
                                title=paste0("Risk factor: ",wastinc_024_unadj[[i]]$variable[1],"\nCumulative incidence ratios:\nAny wasting from 0-24 months age"), 
                                units="",
-                               levels = unique(wastinc_024_unadj[[i]]$meanLevel))
+                               levels = plotlevels)
   print(Anywast_plot)
   REpooled_wastinc024_unadj<-rbind(REpooled_wastinc024_unadj, Anywast[Anywast$study=="Pooled estimate",])
   }
@@ -281,7 +296,7 @@ d <- d %>% group_by(variable) %>% mutate(RRrange=diff(range(RR), na.rm=T))
 #Pooled plot function
 scaleFUN <- function(x) sprintf("%.2f", x)
 
-RF_metaplot <- function(d, title="", yticks=c(0.5, 0.6, 0.7,0.8,0.9,1, 1/0.9, 1/0.8, 1/0.7, 1/0.6, 2)){
+RF_metaplot <- function(d, title="", yticks=c(0.4, 0.6, 0.8,1, 1/0.8 , 1/0.6,1/0.4)){
 
 p<-ggplot(d, aes(x=level)) + 
   geom_point(aes(y=RR, fill=variable, color=variable), size = 4) +
@@ -290,7 +305,7 @@ p<-ggplot(d, aes(x=level)) +
   geom_text(aes( y=0.95, label=reflabel, colour=variable)) +
   labs(x = "Risk factor level", y = "Cumulative Incidence Ratio") +
   geom_hline(yintercept = 1) +
-  coord_cartesian(ylim=c(0.7, 1/0.6)) +
+  coord_cartesian(ylim=c(0.4, 1/0.4)) +
   scale_y_continuous(breaks=yticks, trans='log10', labels=scaleFUN) +
   scale_fill_manual(values=rep(tableau10,4)) +
   scale_colour_manual(values=rep(tableau10,4)) +
@@ -415,7 +430,7 @@ df$level<-recode(df$level,
   
 df$variable<-recode(df$variable,
   "SEX"= "Gender",
-  "birthorder"= "Birth Order",
+  "birthorder"= "Parity",
   "homedelivery"= "Home delivery",
   "vagbirth"= "Vaginal birth",
   "single"= "Single mother",
@@ -462,7 +477,7 @@ p0<-ggplot(d0, aes(x=level)) +
   geom_text(aes( y=0.95, label=reflabel, colour=variable)) +
   labs(x = "Risk factor level", y = "Cumulative Incidence Ratio") +
   geom_hline(yintercept = 1) +
-  scale_y_continuous(breaks=c(0.7,0.8,0.9,1, 1/0.9, 1/0.8, 1/0.7, 1/0.6, 2), trans='log10', labels=scaleFUN) +
+  scale_y_continuous(breaks=c(0.6,0.7,0.8,0.9,1, 1/0.9, 1/0.8, 1/0.7, 1/0.6, 2, 1/0.4), trans='log10', labels=scaleFUN) +
   scale_fill_manual(values=rep(tableau10,4)) +
   scale_colour_manual(values=rep(tableau10,4)) +
   scale_size_continuous(range = c(0.5, 1))+
@@ -483,7 +498,8 @@ p2 <- RF_metaplot(d2, title="Parental characteristics")
 p3 <- RF_metaplot(d3, title="Household characteristics")
 #p3
 
-pdf("Unadjusted Risk Factor Plots Wasting CI Pooled 0-24 6A.pdf", height=9, width=9)
+
+pdf("C:/Users/andre/Documents/HBGDki/Rally-6/Figures/Unadjusted Risk Factor Plots Wasting CI Pooled 0-24 6A.pdf", height=9, width=9)
 p0
 p1
 p2
