@@ -15,6 +15,22 @@ cbPalette <- c( overall="#56B4E9", strata="#999999" , pooled="#f7a809", pooled_u
 # load random effects function
 source("U:/Scripts/Stunting/2-analyses/0_randomeffects.R")
 
+fit.rma <- function(data,age,ni,xi){
+  data=filter(data,agecat==age)
+  fit<-rma(ni=data[[ni]], xi=data[[xi]], 
+           method="REML", measure="PR")
+  out=data %>%
+    ungroup() %>%
+    summarise(nstudies=length(unique(studyid)),
+              nmeas=sum(data[[ni]][agecat==age])) %>%
+    mutate(agecat=age,est=fit$beta, se=fit$se, lb=fit$ci.lb, ub=fit$ci.ub,
+           nmeas.f=paste0("N=",format(sum(data[[ni]]),big.mark=",",scientific=FALSE),
+                          " obs"),
+           nstudy.f=paste0("N=",nstudies," studies"))
+  return(out)
+}
+
+
 load("U:/Data/Stunting/stunting_data_6A.RData") 
 d <- d%>% filter(country=="INDIA")
 
@@ -63,6 +79,12 @@ cuminc.data= evs%>%
   
 cuminc.data
   
+
+#set width and height
+w <- 6
+h <- 4
+
+
 # estimate random effects, format results
 ci.res=lapply(list("6 months","12 months","18 months","24 months"),function(x)
     fit.rma(data=cuminc.data,ni="N", xi="ncases",age=x))
@@ -76,7 +98,7 @@ ci.res$ptest.f=sprintf("%0.0f",ci.res$est)
 ci.res$stratacol<-"pooled"
 
 # plot pooled cumulative incidence
-pdf("U:/Figures/stunting-cuminc-pool_6A.pdf",width=8,height=8,onefile=TRUE)
+pdf("U:/Figures/stunting-cuminc-pool_6A.pdf",width=w,height=h,onefile=TRUE)
 ggplot(ci.res,aes(y=est,x=agecat, fill=stratacol, color=stratacol))+
   geom_point(size=4)+
   geom_linerange(aes(ymin=lb,ymax=ub),width=0.05, alpha=0.5, size = 3) +
@@ -153,7 +175,7 @@ ci.res.nobirth$stratacol<-"pooled"
 
 
 # plot pooled cumulative incidence
-pdf("U:/Figures/stunting-cuminc-pool-bc-nobirth_6A.pdf",width=8,height=8,onefile=TRUE)
+pdf("U:/Figures/stunting-cuminc-pool-bc-nobirth_6A.pdf",width=w,height=h,onefile=TRUE)
 
 ggplot(ci.res.nobirth,aes(y=est,x=agecat, fill=stratacol, color=stratacol))+
   geom_point(size=4)+
@@ -221,7 +243,7 @@ ci.res.birth
 ci.res.birth$stratacol<-"pooled"
 
 # plot pooled cumulative incidence
-pdf("U:/Figures/stunting-cuminc-pool-bc-birth_6A.pdf",width=8,height=8,onefile=TRUE)
+pdf("U:/Figures/stunting-cuminc-pool-bc-birth_6A.pdf",width=w,height=h,onefile=TRUE)
 ggplot(ci.res.birth,aes(y=est,x=agecat, fill=stratacol, color=stratacol))+
   geom_point(size=4)+
   geom_linerange(aes(ymin=lb,ymax=ub),width=0.05, alpha=0.5, size = 3) +

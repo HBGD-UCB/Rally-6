@@ -4,13 +4,13 @@
 # Import data, subset to relevant variables
 #-----------------------------------
 rm(list=ls())
-library(dplyr)
+library(tidyverse)
 library(ggplot2)
 library(data.table)
 
 setwd("U:/data/GHAP_data/")
 load("U:/data/Stunting/Full-compiled-data/compiled_HAZ_dataset.RData")
-d<-df
+
 #--------------------------------------------
 # Subset to relevant variables
 #--------------------------------------------
@@ -24,6 +24,18 @@ nrow(d)
 # drop acutely ill enrollment studies
 #--------------------------------------------
 d <- d %>% filter(studyid!="ki1000301-DIVIDS")
+
+#--------------------------------------------
+# Add in TDC
+#--------------------------------------------
+
+tdc <- readRDS("U:/data/tdc.rds")
+colnames(tdc) <- tolower(colnames(tdc))
+tdc <- tdc %>% subset(., select=c(studyid, subjid, country, agedays, haz))
+tdc$tr <- NA
+class(tdc$subjid) <- "integer64"
+
+d <- bind_rows(d, tdc)
 
 #--------------------------------------------
 # drop unrealistic HAZ
@@ -53,4 +65,13 @@ table(d$studyid,d$country)
 
 
 save(d,file="U:/Data/Stunting/stunting_data_6A.RData")
+
+
+
+#tabulate children and observations
+df <- d%>% filter(country=="INDIA") %>% filter(haz > -6 & haz < 6) %>% filter(agedays < 25*30.4167)
+
+length(unique(d$studyid))
+length(unique(paste0(d$studyid,"-",d$subjid)))
+dim(d)
 
