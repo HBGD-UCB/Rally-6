@@ -239,3 +239,89 @@ file="C:/Users/andre/Documents/HBGDki/Rally-6/Results/6A_Descriptive_epi_plots_s
 
 
 
+
+
+
+
+
+
+
+#------------------------------------
+# Secondary plots (for presentation)
+#------------------------------------
+
+
+
+
+#get legend
+df <- d[d$statistic=="Stunting\nincidence\nrate",]
+df <- df %>% rename(Legend = stratacol)
+df$Legend <- factor(df$Legend, levels=unique(df$Legend))
+df$Legend<-recode(df$Legend,
+"overall"= "Unstratified",
+"pooled"= "Pooled age stratified",
+ "pooled_unstrat"= "Pooled unstratified",
+ "strata"= "Age stratified"
+)
+col_legend <- c( `Unstratified`="#56B4E9", `Age stratified`="#999999" , `Pooled age stratified`="#f7a809", `Pooled unstratified`="#009E73") #, #f7a809, "#56B4E9",  "#E69F00",)
+cbPalette <- c( overall="#56B4E9", strata="#999999" , pooled="#f7a809", pooled_unstrat="#009E73") #, #f7a809, "#56B4E9",  "#E69F00",)
+
+ggplot(df, aes(`Child age stratification`)) +
+  geom_point(aes(x=strata, y=Mean, fill=Legend, color=Legend), size = 4) +
+  geom_linerange(aes(x=strata, ymin = Lower.95.CI, ymax = Upper.95.CI, color=Legend),
+                 alpha=0.5, size = 3) +
+  scale_fill_manual(values=col_legend) +
+  scale_colour_manual(values=col_legend) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(legend.position="right",
+        strip.text.x = element_text(size=8),
+        axis.text.x = element_text(size=8)) +
+  ylab("Stunting incidence rate per 1000 days")+
+  ggtitle("Stunting incidence rate")
+
+#Plot single pooled estimate
+ggplot(d[d$statistic=="Prevalence\nof\nstunting" & d$country_cohort=="Pooled",], aes(`Child age stratification`)) +
+  geom_point(aes(x=strata, y=Mean*100, fill=stratacol, color=stratacol), size = 4) +
+  geom_linerange(aes(x=strata, ymin = Lower.95.CI*100, ymax = Upper.95.CI*100, color=stratacol),
+                 alpha=0.5, size = 3) +
+  scale_fill_manual(values=cbPalette) +
+  scale_colour_manual(values=cbPalette) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(strip.background = element_blank(),
+        legend.position="none",
+        strip.text.x = element_text(size=12),
+        axis.text.x = element_text(size=12)) +
+  ylab("Stunting prevalence")+
+  ggtitle("Pooled stunting longitudinal prevalence")
+
+#  [1] Pooled         CMC-V-BCS-2002 EU             IRC            TDC           
+#  [6] COHORTS        MAL-ED         VITAMIN-A      Vitamin-B12    SAS-CompFeed  
+# [11] SAS-FoodSuppl  ZnMort  
+
+ggplot(d[d$statistic=="Prevalence\nof\nstunting" & d$country_cohort=="MAL-ED",], aes(`Child age stratification`)) +
+  geom_point(aes(x=strata, y=Mean*100, fill=stratacol, color=stratacol), size = 4) +
+  geom_linerange(aes(x=strata, ymin = Lower.95.CI*100, ymax = Upper.95.CI*100, color=stratacol),
+                 alpha=0.5, size = 3) +
+  scale_fill_manual(values=cbPalette) +
+  scale_colour_manual(values=cbPalette) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(strip.background = element_blank(),
+        legend.position="none",
+        strip.text.x = element_text(size=12),
+        axis.text.x = element_text(size=12)) +
+  ylab("Stunting prevalence")+
+  ggtitle("MAL-ED India stunting longitudinal prevalence")
+
+#Stunting IR
+desc_epi_metaplot(d[d$country_cohort=="",], stat="Stunting\nincidence\nrate",
+                  ylabel="Stunting incidence rate per 1000 days",
+                  title="Stunting incidence rate")
+
+
+
+
+
+
+
+
+
